@@ -1,0 +1,111 @@
+{% extends "../../main.html" %}
+
+{% block title %}Create Flag{% end %}
+
+{% block header %}
+<script src="/static/js/pages/admin/create/flags.js"></script>
+{% end %}
+
+{% block content %}
+{% from models.Box import Box %}
+<div class="container">
+    <h1>
+        <i class="fa fa-flag"></i>
+        Créer un Flag static
+    </h1>
+    <br />
+    {% if errors is not None and len(errors) != 0 %}
+        {% for error in errors %}
+        <div class="alert alert-error">
+            <a class="close" data-dismiss="alert" href="#">&times;</a>
+            <h4 class="alert-heading">ERREUR</h4>
+            {{ error }}
+        </div>
+        {% end %}
+    {% end %}
+    <div class="well">
+        <div class="row">
+            <div class="span4">
+                <form class="form-horizontal" action="/admin/create/flag/static" method="post">
+                    {% raw xsrf_form_html() %}
+                    <div class="control-group">
+                        <label class="control-label" for="flag_name">Nom du Flag</label>
+                        <div class="controls">
+                            <input autofocus required id="flag-name" maxlength="16" name="flag_name" type="text" placeholder="Nom du Flag"
+                                    rel="popover"
+                                    data-original-title="Flag Name"
+                                    data-content="La manière dont vous voulez que le Flag soit affiché." />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="token">Jeton</label>
+                        <div class="controls">
+                            <input required id="token" name="token" type="text" placeholder="Jeton Static" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="description">Description</label>
+                        <div class="controls">
+                            <textarea required id="description" name="description" type="text" placeholder="Description"
+                                    rel="popover"
+                                    data-original-title="Description"
+                                    data-content="This is the description.">
+                            </textarea>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="capture-message">Capturer le  Message</label>
+                        <div class="controls">
+                            <textarea id="capture-message" name="capture_message" type="text" placeholder="(Optionnel)"
+                                    rel="popover"
+                                    data-original-title="Capture Message"
+                                    data-content="C'est le message affiché à l'utilisateur une fois qu'il est entré." >
+                            </textarea>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="reward">Récompense</label>
+                        <div class="controls">
+                            <input required id="reward" name="reward" type="text" pattern="[0-9]+" placeholder="$ Récompense"
+                                   rel="popover"
+                                   data-original-title="Reward"
+                                   data-content="C'est le montant d'argent accordé pour la capture du Flag.">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="box_uuid">Machine</label>
+                        <div class="controls">
+                            <select id="box-uuid" name="box_uuid"
+                                    rel="popover"
+                                    data-original-title="Box"
+                                    data-content="C'est la Machine sur laquelle se trouve le Flag.">
+                                <option value=""></option>
+                                {% for box in Box.all() %}
+                                <option value="{{ box.uuid }}">
+                                    {{ box.name }} ({{ box.corporation.name }})
+                                </option>
+                                {% end %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <button class="btn btn-primary" type="submit">Créer le Flag</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="offset3 span4">
+                <p>
+                    <blockquote>
+                        <small>
+                            <strong>Jetons:</strong>
+                            Dans ce cas, le "Flag" est une chaîne statique. L'utilisateur doit soumettre une chaîne <i> exacte </i> pour capturer le Flag. Toutes les correspondances sont sensibles à la casse (et les espaces).
+                        </small>
+                    </blockquote>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}

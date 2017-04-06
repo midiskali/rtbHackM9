@@ -1,0 +1,138 @@
+{% extends "../main.html" %}
+
+{% block title %}Registration{% end %}
+
+{% block header %}
+    <script src="/static/js/pages/public/registration.js"></script>
+{% end %}
+
+{% block content %}
+{% from tornado.options import options %}
+{% from models.Team import Team %}
+    <div class="container">
+        <h1>
+            <i class="fa fa-pencil"></i>
+            Enregistrement
+        </h1>
+        <br />
+        {% if errors is not None and len(errors) != 0 %}
+            {% for error in errors %}
+                <div class="alert alert-error">
+                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                    <h4 class="alert-heading">ERREUR</h4>
+                    {{ error }}
+                </div>
+            {% end %}
+        {% end %}
+        <div class="well">
+            <legend>
+                Bienvenue dans la scène
+            </legend><!-- http://www.youtube.com/watch?v=xIs_5nfJKu4&list=PLC2FCB2871C396459 -->
+            <form class="form-horizontal" action="/registration" method="post" enctype="multipart/form-data">
+                {% raw xsrf_form_html() %}
+                <div class="control-group">
+                    <label class="control-label" for="handle">
+                        <i class="fa fa-user"></i>
+                        Pseudo
+                    </label>
+                    <div class="controls">
+                        <input required id="handle" name="handle" maxlength="16" placeholder="Pseudo Hacker" type="text"
+                            rel="popover" pattern="^[a-zA-Z0-9 ]{3,16}$"
+                            data-original-title="Hacker Name Selection"
+                            data-content="Votre pseudo doit être de 3 à 16 caractères alphanumériques" />
+                    </div>
+                </div>
+
+                <hr>
+                <h5>Rejoindre une équipe</h5>
+                    <div class="control-group">
+                        <label class="control-label" for="team">
+                            <i class="fa fa-users"></i>
+                            Sélectionnez une équipe
+                        </label>
+                        <div class="controls">
+                            <select name="team">
+                                <option value=""></option>
+                                {% for team in Team.all() %}
+                                    {% if len(team.members) < options.max_team_size %}
+                                        <option value="{{ team.uuid }}">{{ team.name }}</option>
+                                    {% end %}
+                                {% end %}
+                            </select>
+                        </div>
+                    </div>
+                    {% if options.public_teams %}
+                        <h5>Démarrer une nouvelle équipe</h5>
+                        <div class="control-group">
+                            <label class="control-label" for="team_name">Nom de l'équipe</label>
+                            <div class="controls">
+                                <input id="team-name" name="team_name" maxlength="24" type="text" placeholder="Nom de l'équipe"
+                                    rel="popover"
+                                    data-original-title="New Team Name"
+                                    data-content="Choisissez un nom pour votre nouvelle équipe![3-24 caractères]" >
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="motto">Slogan</label>
+                            <div class="controls">
+                                <input id="motto" name="motto" maxlength="32" type="text" placeholder="Slogan d'équipe"
+                                    rel="popover"
+                                    data-original-title="Team Motto"
+                                    data-content="Quel est le slogan de votre équipe?? [Max: 32 caractères]">
+                            </div>
+                        </div>
+                    {% end %}
+                    <hr>
+                <div class="control-group">
+                    <label class="control-label" for="pass1">Mot de passe du compte</label>
+                    <div class="controls">
+                        <input required id="pass1" name="pass1"  placeholder="Mot de passe" type="password"
+                            autocomplete="off"
+                            rel="popover"
+                            data-original-title="Password"
+                            data-content="Entrez un mot de passe complexe de {{ options.min_user_password_length }}+ caractères" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="pass2">Confirmer le mot de passe du compte</label>
+                    <div class="controls">
+                        <input required id="pass2" name="pass2" placeholder="Confirmer le mot de passe" type="password"
+                            autocomplete="off"
+                            rel="popover"
+                            data-original-title="Confirm Password"
+                            data-content="Entrez le même mot de passe que précédemment" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="bpass1">Mot de passe du compte bancaire</label>
+                    <div class="controls">
+                        <input required id="bpass" name="bpass" maxlength="{{ options.max_password_length }}" placeholder="Mot de passe du compte bancaire" type="password"
+                            autocomplete="off"
+                            rel="popover"
+                            data-original-title="Password"
+                            data-content="Utilisé pour sécuriser votre (in-game) compte bancaire. [Max: {{ options.max_password_length }} caractères].  NE PAS entrer le mot de passe de votre compte bancaire réel." />
+                    </div>
+                </div>
+                {% if options.restrict_registration %}
+                    <div class="control-group">
+                        <label class="control-label" for="token">Jeton d'inscription</label>
+                        <div class="controls">
+                            <input required id="regtoken" name="token" placeholder="Jeton" type="text"
+                                rel="popover" pattern="^[a-fA-F0-9]{1,6}$"
+                                data-original-title="Registration Token"
+                                data-content="Obtenez votre jeton d'inscription à partir de la réception" />
+                        </div>
+                    </div>
+                {% end %}
+                <br />
+                <div class="control-group">
+                    <div class="controls">
+                        <button class="btn btn-primary" type="submit">
+                            Créer un compte
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% end %}
